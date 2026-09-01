@@ -1,0 +1,14 @@
+{
+    // Must EXACTLY match your existing Cloudflare project name
+    "name": "mechanith-page",
+  
+    // Set to the first day of the current month, e.g. "2026-01-01"
+    "compatibility_date": "2026-01-01",
+  
+    "assets": {
+      // Astro's build output
+      "directory": "./dist",
+      // Serve dist/404.html for unknown URLs
+      "not_found_handling": "404-page"
+    }
+  }

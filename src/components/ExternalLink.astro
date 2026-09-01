@@ -1,0 +1,46 @@
+---
+// Config-driven external link:
+//   URL known  → direct link, new tab
+//   URL = null → points to the /link/<key> "coming soon" page
+import { externalLinks, type LinkKey } from '../config/links';
+
+interface Props { link: LinkKey; label?: string }
+const { link, label } = Astro.props;
+const entry = externalLinks[link];
+const href = entry.url ?? `/link/${link}`;
+---
+<a
+  class="ext-link"
+  href={href}
+  target={entry.url ? '_blank' : undefined}
+  rel={entry.url ? 'noopener noreferrer' : undefined}
+>
+  {label ?? entry.label}
+  {entry.url
+    ? <span class="mark" aria-hidden="true">↗</span>
+    : <span class="mark soon">soon</span>}
+</a>
+
+<style>
+  .ext-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    color: var(--c-ink);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .ext-link:hover { border-color: var(--c-accent); color: var(--c-accent); }
+  .mark { font-size: 0.75rem; color: var(--c-muted); }
+  .mark.soon {
+    color: var(--c-accent);
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    border: 1px solid var(--c-line);
+    padding: 0.1rem 0.3rem;
+  }
+</style>

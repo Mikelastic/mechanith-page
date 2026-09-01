@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { externalLinks } from '../../config/links';
+
+// One page is generated for EVERY key in links.ts — now and in the future
+export function getStaticPaths() {
+  return Object.entries(externalLinks).map(([slug, entry]) => ({
+    params: { slug },
+    props: { entry },
+  }));
+}
+
+interface Props { entry: { label: string; url: string | null } }
+const { entry } = Astro.props;
+---
+<BaseLayout title={entry.label} showBuyButton={false}>
+  <section class="page shell">
+    {entry.url ? (
+      <>
+        <h1>{entry.label}</h1>
+        <p>Visit the official page:</p>
+        <a class="btn btn-primary" href={entry.url} target="_blank" rel="noopener noreferrer">
+          Open {entry.label} ↗
+        </a>
+      </>
+    ) : (
+      <>
+        <h1>{entry.label} — coming soon</h1>
+        <p>
+          The official {entry.label} page for MECHANITH isn’t live yet.
+          It will be linked here the moment it exists.
+        </p>
+        <p>
+          Meanwhile: <a href="/">back to base</a>, or watch for updates on our
+          <a href="/link/discord">Discord</a> and <a href="/link/x">X</a>.
+        </p>
+      </>
+    )}
+  </section>
+</BaseLayout>

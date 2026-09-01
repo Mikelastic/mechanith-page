@@ -1,0 +1,99 @@
+---
+import ExternalLink from './ExternalLink.astro';
+import { SITE } from '../config/site';
+import { ui } from '../config/strings';
+import type { LinkKey } from '../config/links';
+
+const t = ui.en;
+const year = new Date().getFullYear();
+const socials: LinkKey[] = ['discord', 'x', 'youtube'];
+---
+<footer class="foot">
+  <div class="shell">
+    <section class="block">
+      <h2>{t.whereToBuy}</h2>
+      <div class="row">
+        <ExternalLink link="steam" />
+        <ExternalLink link="switch" />
+        <ExternalLink link="paddle" />
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>{t.stayInTouch}</h2>
+      <p class="note">{t.newsletterNote}</p>
+      <form class="mail" action="#" method="post">
+        <label class="sr-only" for="mail">{t.emailLabel}</label>
+        <input id="mail" type="email" name="email" placeholder={t.emailPlaceholder} disabled />
+        <button type="submit" disabled>{t.subscribe}</button>
+      </form>
+      <p class="note">{t.newsletterSoon}</p>
+      <p class="note">{t.contactLine} <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+    </section>
+
+    <div class="legal">
+      <p>© {year} {SITE.studio}. MECHANITH™. All rights reserved.</p>
+      <nav class="legal-links" aria-label="Legal">
+        <a href="/legal/privacy">Privacy</a>
+        <a href="/legal/terms">Terms</a>
+      </nav>
+      <nav class="socials" aria-label="Social">
+        {socials.map((s) => <ExternalLink link={s} />)}
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .foot {
+    margin-top: var(--pad-y);
+    border-top: 1px solid var(--c-line);
+    background: var(--c-surface);
+  }
+  .foot .shell { display: grid; gap: 2.5rem; padding-block: var(--pad-y); }
+  .block h2 {
+    font-size: var(--size-small);
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin: 0 0 1rem;
+  }
+  .row { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+  .mail { display: flex; gap: 0.5rem; max-width: 24rem; }
+  .mail input {
+    flex: 1;
+    background: var(--c-bg);
+    border: 1px solid var(--c-line);
+    color: var(--c-ink);
+    font: inherit;
+    padding: 0.55rem 0.75rem;
+  }
+  .mail button {
+    background: var(--c-accent);
+    border: none;
+    color: var(--c-bg);
+    font: inherit;
+    font-weight: 600;
+    padding: 0.55rem 1rem;
+  }
+  .note { color: var(--c-muted); font-size: var(--size-small); margin: 0.75rem 0 0; }
+  .legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--c-line);
+    padding-top: 1.5rem;
+  }
+  .legal p { margin: 0; color: var(--c-muted); font-size: var(--size-small); }
+  .legal-links, .socials { display: flex; gap: 0.75rem; }
+  .legal-links a {
+    color: var(--c-muted);
+    font-size: var(--size-small);
+    text-decoration: none;
+  }
+  .legal-links a:hover { color: var(--c-ink); }
+  /* :global() — needed to style a child component's element from here */
+  .socials :global(.ext-link) { padding: 0.35rem 0.7rem; font-size: 0.8rem; }
+</style>

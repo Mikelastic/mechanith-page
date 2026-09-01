@@ -1,0 +1,100 @@
+---
+import { externalLinks, type LinkKey } from '../config/links';
+import { ui } from '../config/strings';
+
+const t = ui.en;
+const storeKeys: LinkKey[] = ['steam', 'switch', 'itch', 'paddle'];
+const stores = storeKeys.map((key) => ({ key, ...externalLinks[key] }));
+---
+<div class="buy">
+  <ul class="buy-menu" id="buy-menu">
+    {stores.map((s) => (
+      <li>
+        {s.url ? (
+          <a class="buy-opt" href={s.url} target="_blank" rel="noopener noreferrer">
+            {s.label}<span aria-hidden="true">↗</span>
+          </a>
+        ) : (
+          <a class="buy-opt is-pending" href={`/link/${s.key}`}>
+            {s.label}<span class="soon">{t.soon}</span>
+          </a>
+        )}
+      </li>
+    ))}
+  </ul>
+  <button class="buy-toggle" type="button" aria-expanded="false" aria-controls="buy-menu">
+    {t.buy}
+  </button>
+</div>
+
+<script>
+  // This is the only JavaScript on the site so far — and it runs in the browser.
+  const btn = document.querySelector<HTMLButtonElement>('.buy-toggle');
+  const menu = document.querySelector<HTMLUListElement>('#buy-menu');
+
+  btn?.addEventListener('click', () => {
+    const open = btn.getAttribute('aria-expanded') === 'true';
+    btn.setAttribute('aria-expanded', String(!open));
+    menu?.classList.toggle('is-open', !open);
+  });
+
+  // Close when clicking anywhere outside
+  document.addEventListener('click', (e) => {
+    if (!btn || !menu || !menu.classList.contains('is-open')) return;
+    if (!e.composedPath().includes(btn) && !e.composedPath().includes(menu)) {
+      menu.classList.remove('is-open');
+      btn.setAttribute('aria-expanded', 'false');
+    }
+  });
+</script>
+
+<style>
+  .buy { position: fixed; left: 1rem; bottom: 1rem; z-index: 50; }
+  .buy-toggle {
+    background: var(--c-accent);
+    color: var(--c-bg);
+    border: none;
+    font: inherit;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    padding: 0.7rem 1.6rem;
+    cursor: pointer;
+  }
+  .buy-menu {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 0;
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem;
+    min-width: 10rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-line);
+    opacity: 0;
+    transform: translateY(0.5rem);
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+  }
+  .buy-menu.is-open { opacity: 1; transform: none; pointer-events: auto; }
+  .buy-opt {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    color: var(--c-ink);
+    text-decoration: none;
+    font-size: 0.9rem;
+    white-space: nowrap;
+  }
+  .buy-opt:hover { background: var(--c-surface-2); }
+  .buy-opt.is-pending { color: var(--c-muted); }
+  .soon {
+    font-size: 0.6rem;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--c-accent);
+    border: 1px solid var(--c-line);
+    padding: 0.1rem 0.3rem;
+  }
+</style>
