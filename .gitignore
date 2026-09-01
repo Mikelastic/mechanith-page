@@ -1,0 +1,17 @@
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Build output (we'll add this later when we use Astro)
+node_modules/
+dist/
+.astro/
+.env
+.env.local
