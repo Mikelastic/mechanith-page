@@ -4,25 +4,36 @@
    palette (send me the hex codes when ready).
    ========================================================= */
    :root {
-    /* color (placeholders) */
-    --c-bg: #0a0d12;          /* page background */
-    --c-surface: #11161d;     /* panels */
-    --c-surface-2: #161d26;   /* raised panels */
-    --c-line: #232b36;        /* hairline borders */
-    --c-ink: #e6ebf0;         /* primary text */
-    --c-muted: #93a0ae;       /* secondary text */
-    --c-accent: #62e6c8;      /* primary accent */
-    --c-accent-2: #e0b34a;    /* secondary accent (reserved) */
+    /* Void Navy ramp — base surfaces & text (your ramp 1) */
+    --c-bg: #0b1021;            /* Void Navy (Outline/Capstone) — page background */
+    --c-surface: #11182b;       /* Void (Deep) — panels */
+    --c-surface-2: #151d33;     /* Void (Mid) — raised panels */
+    --c-line: #1c2541;          /* Void (Light) — hairlines */
+    --c-line-strong: #293b5d;   /* Navy (Shadow) — visible borders */
+    --c-ink: #e2e6eb;           /* Steel (Bright) — primary text */
+    --c-muted: #9ba4b5;         /* Steel (Base) — secondary text */
   
-    /* typography (placeholder font — swap when chosen) */
-    --font-body: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    /* VoidCyan — player energy (your ramp 3): primary accent */
+    --c-accent: #0ce6f2;        /* Emissive (Mid) — CTAs, links */
+    --c-accent-strong: #3afffb; /* Emissive (High) — glow, selection */
+    --c-accent-deep: #0098db;   /* Highlight — hovers */
+  
+    /* AethelPurple — ancient civilization (your ramp 5): lore accent */
+    --c-lore: #a64dcc;          /* Highlight */
+    --c-lore-strong: #cf70eb;   /* Emissive (High) */
+  
+    /* BloodRed — threat (your ramp 4): errors and danger only */
+    --c-danger: #e8382c;        /* Highlight */
+  
+    /* Typography — Chakra Petch (one family site-wide, per spec) */
+    --font-body: 'Chakra Petch', system-ui, -apple-system, 'Segoe UI', sans-serif;
     --size-hero: clamp(2.75rem, 9vw, 5.5rem);
     --size-h1: clamp(1.9rem, 4vw, 2.75rem);
     --size-h2: clamp(1.4rem, 3vw, 2rem);
     --size-body: 1rem;
     --size-small: 0.85rem;
   
-    /* layout & chrome */
+    /* Layout & chrome (unchanged) */
     --shell-max: 64rem;
     --pad-y: 3.5rem;
     --topbar-h: 3.25rem;

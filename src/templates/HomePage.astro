@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config/site';
+import type { Locale } from '../config/i18n';
+import { localizedPath, type Locale } from '../config/i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+
+const copy = {
+  en: {
+    eyebrow: 'The thinking player’s action rogue-like',
+    sub: 'Master the swap. Survive the planet. Uncover what was lost.',
+    ctaWishlist: 'Wishlist on Steam',
+    ctaTrailer: 'Watch the trailer',
+    pitchTitle: 'Stranded. Swapping. Surviving.',
+    pitch:
+      'Mechanith is a top-down, sci-fi rogue-like where you crash-land on a hostile alien planet and fight your way home. Descend through carefully crafted chambers — hand-built rooms and tilemaps stitched into fresh layouts by an onboard procedural manager — spend resources at your crashed-ship hub to grow stronger, and unravel the secrets of a lost civilization.',
+    swapTitle: 'Symbiotic swapping',
+    swapLead:
+      'The central challenge is not just to execute — it is to constantly ask: “Who is the right character for this exact moment?”',
+    kaelName: 'Kaelen — “Kael”',
+    kaelDesc: 'Nimble and gun-wielding. Fast, precise, fragile — the scalpel.',
+    axlName: 'A.X.L',
+    axlDesc: 'Robust wheeled companion. Durable and deliberate — the hammer.',
+    pillarsTitle: 'What awaits',
+    pillars: [
+      { h: 'Crafted chambers, remixed', p: 'Hand-built rooms and tilemaps, connected and populated anew on every descent.' },
+      { h: 'Crashed-ship hub', p: 'Spend resources. Grow stronger between runs.' },
+      { h: 'A lost civilization', p: 'Uncover its secrets. Find the way home.', lore: true },
+    ],
+    mediaTitle: 'From the planet',
+    mediaCta: 'Media & press kit',
+    shotLabel: 'SCREENSHOT — TO COME',
+    kaelAria: 'Portrait of Kael (placeholder)',
+    axlAria: 'Portrait of A.X.L (placeholder)',
+  },
+  es: {
+    eyebrow: 'El rogue-like de acción para quebrarse la cabeza',
+    sub: 'Domina el Swap. Sobrevive al planeta. Descubre sus entrañas.',
+    ctaWishlist: 'Añadir a la lista de deseos en Steam',
+    ctaTrailer: 'Ver el tráiler',
+    pitchTitle: 'Naufragio. Intercambio. Supervivencia.',
+    pitch:
+      'Mechanith es un rogue-like de ciencia ficción con vista cenita, donde te estrellas en un planeta alienígena hostil y luchas por volver a casa. Desciende por cámaras cuidadosamente construidas — salas y tilemaps hechos a mano, unidos en trazados nuevos por un gestor procedural —, gasta recursos en el hub de tu nave estrellada para hacerte más fuerte y desentraña los secretos de una civilización perdida.',
+    swapTitle: 'Intercambio simbiótico',
+    swapLead:
+      'El desafío central no es solo ejecutar: es preguntarse constantemente: «¿Quién es el personaje correcto para este momento exacto?»',
+    kaelName: 'Kaelen — «Kael»',
+    kaelDesc: 'Ágil y armado. Rápido, preciso, frágil — el bisturí.',
+    axlName: 'A.X.L',
+    axlDesc: 'Compañero robusto sobre ruedas. Durable y deliberado — el martillo.',
+    pillarsTitle: 'Lo que te espera',
+    pillars: [
+      { h: 'Cámaras hechas a mano, remezcladas', p: 'Salas y tilemaps construidos a conciencia, conectados y poblados de nuevo en cada descenso.' },
+      { h: 'Hub de la nave estrellada', p: 'Gasta recursos. Crece entre partidas.' },
+      { h: 'Una civilización perdida', p: 'Descubre sus secretos. Encuentra el camino a casa.', lore: true },
+    ],
+    mediaTitle: 'Desde el planeta',
+    mediaCta: 'Multimedia y kit de prensa',
+    shotLabel: 'CAPTURA — PRÓXIMAMENTE',
+    kaelAria: 'Retrato de Kael (marcador de posición)',
+    axlAria: 'Retrato de A.X.L (marcador de posición)',
+  },
+}[locale];
+
+const mediaHref = localizedPath(locale, '/media');
+---
+<BaseLayout title={SITE.title} locale={locale}>
+
+  <section class="hero">
+    <div class="hero-grid" aria-hidden="true"></div>
+    <p class="eyebrow">{copy.eyebrow}</p>
+    <h1 class="title">MECHANITH</h1>
+    <p class="sub">{copy.sub}</p>
+    <div class="cta">
+      <a class="btn btn-primary" href="/link/steam">{copy.ctaWishlist}</a>
+      <a class="btn" href={mediaHref}>{copy.ctaTrailer}</a>
+    </div>
+  </section>
+
+  <section class="shell sec">
+    <h2>{copy.pitchTitle}</h2>
+    <p class="lead">{copy.pitch}</p>
+  </section>
+
+  <section class="shell sec">
+    <h2>{copy.swapTitle}</h2>
+    <p class="lead" set:html={copy.swapLead.replace(/“([^”]+)”|«([^»]+)»/, (m: string) => `<em>${m}</em>`)}></p>
+    <div class="duo">
+      <article class="char">
+        <div class="portrait" role="img" aria-label={copy.kaelAria}>KAEL</div>
+        <h3>{copy.kaelName}</h3>
+        <p>{copy.kaelDesc}</p>
+      </article>
+      <article class="char">
+        <div class="portrait" role="img" aria-label={copy.axlAria}>A.X.L</div>
+        <h3>{copy.axlName}</h3>
+        <p>{copy.axlDesc}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="shell sec">
+    <h2>{copy.pillarsTitle}</h2>
+    <ul class="pillars">
+      {copy.pillars.map((p) => (
+        <li class:list={{ lore: p.lore }}>
+          <h3>{p.h}</h3><p>{p.p}</p>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="shell sec last">
+    <h2>{copy.mediaTitle}</h2>
+    <div class="shots">
+      <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+      <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+      <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+      <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+    </div>
+    <a class="btn" href={mediaHref}>{copy.mediaCta}</a>
+  </section>
+
+</BaseLayout>
+
+<style>
+  .hero {
+    position: relative;
+    overflow: hidden;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.25rem;
+    text-align: center;
+    padding: var(--topbar-h) 1rem 2.5rem;
+  }
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--c-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--c-line) 1px, transparent 1px);
+    background-size: 48px 48px;
+    opacity: 0.35;
+    animation: drift 40s linear infinite;
+    mask-image: radial-gradient(ellipse at 50% 40%, black 25%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 25%, transparent 75%);
+  }
+  @keyframes drift { to { background-position: 48px 96px; } }
+
+  .eyebrow {
+    color: var(--c-accent);
+    font-size: var(--size-small);
+    font-weight: 300;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+  }
+  .title { font-size: var(--size-hero); letter-spacing: 0.18em; margin: 0; font-weight: 700; }
+  .sub { color: var(--c-muted); max-width: 34rem; }
+  .cta { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+
+  .sec { padding-block: var(--pad-y); border-top: 1px solid var(--c-line); text-align: center; }
+  .sec .lead { max-width: 44rem; margin-inline: auto; }
+  .lead :global(em) { color: var(--c-accent); font-style: normal; }
+
+  .duo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    text-align: left;
+  }
+  .char { background: var(--c-surface); border: 1px solid var(--c-line-strong); padding: 1.25rem; }
+  .char h3 { margin: 1rem 0 0.5rem; }
+  .char p { color: var(--c-muted); margin: 0; }
+  .portrait {
+    aspect-ratio: 4 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-surface-2);
+    border: 1px solid var(--c-line-strong);
+    color: var(--c-muted);
+    letter-spacing: 0.3em;
+    font-size: 0.8rem;
+  }
+
+  .pillars {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin: 2rem 0 0;
+    padding: 0;
+    text-align: left;
+  }
+  .pillars h3 { font-size: 1.05rem; }
+  .pillars p { color: var(--c-muted); margin: 0; }
+  /* AethelPurple — reserved for the ancient civilization, per palette semantics */
+  .pillars li.lore h3 { color: var(--c-lore-strong); }
+
+  .shots { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 2rem 0; }
+  .shot {
+    aspect-ratio: 16 / 9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-surface-2);
+    border: 1px solid var(--c-line-strong);
+    color: var(--c-muted);
+    letter-spacing: 0.25em;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 720px) {
+    .duo, .pillars, .shots { grid-template-columns: 1fr; }
+  }
+</style>

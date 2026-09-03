@@ -1,21 +1,31 @@
 ---
+import '@fontsource/chakra-petch/300.css';
+import '@fontsource/chakra-petch/400.css';
+import '@fontsource/chakra-petch/600.css';
+import '@fontsource/chakra-petch/700.css';
 import '../styles/global.css';
 import OverlayTopBar from '../components/OverlayTopBar.astro';
 import BuyButton from '../components/BuyButton.astro';
 import FooterCTA from '../components/FooterCTA.astro';
 import { SITE } from '../config/site';
+import { defaultLocale, type Locale } from '../config/i18n';
 
 interface Props {
-  title: string;                 // page title; pass SITE.title for Home
+  title: string;
   description?: string;
-  showTopBar?: boolean;          // dev toggle — default true
-  showBuyButton?: boolean;       // dev toggle — default true
-  showFooterCTA?: boolean;       // default true (in-flow, bottom of page)
+  locale?: Locale;
+  /** false on pages that exist only in English (link/legal/404) → language toggle inert */
+  localized?: boolean;
+  showTopBar?: boolean;
+  showBuyButton?: boolean;
+  showFooterCTA?: boolean;
 }
 
 const {
   title,
   description = SITE.description,
+  locale = defaultLocale,
+  localized = true,
   showTopBar = true,
   showBuyButton = true,
   showFooterCTA = true,
@@ -23,9 +33,15 @@ const {
 
 const pageTitle = title === SITE.title ? SITE.title : `${title} — ${SITE.title}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// hreflang alternates: tell search engines the EN and ES versions of this page
+const path = Astro.url.pathname;
+const rootPath = locale === 'es' ? path.replace(/^\/es(?=\/|$)/, '') || '/' : path;
+const enUrl = new URL(rootPath, Astro.site);
+const esUrl = new URL(rootPath === '/' ? '/es' : `/es${rootPath}`, Astro.site);
 ---
 <!doctype html>
-<html lang={SITE.language}>
+<html lang={locale}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -33,6 +49,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    {localized && (
+      <>
+        <link rel="alternate" hreflang="en" href={enUrl} />
+        <link rel="alternate" hreflang="es" href={esUrl} />
+        <link rel="alternate" hreflang="x-default" href={enUrl} />
+      </>
+    )}
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content={SITE.title} />
     <meta property="og:title" content={pageTitle} />
@@ -41,13 +64,13 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     {/* LAYER 2 — fixed chrome, toggled per page */}
-    {showTopBar && <OverlayTopBar />}
-    {showBuyButton && <BuyButton />}
+    {showTopBar && <OverlayTopBar locale={locale} localized={localized} />}
+    {showBuyButton && <BuyButton locale={locale} />}
 
     {/* LAYER 1 — in-flow page content */}
     <main>
       <slot />
     </main>
-    {showFooterCTA && <FooterCTA />}
+    {showFooterCTA && <FooterCTA locale={locale} />}
   </body>
 </html>

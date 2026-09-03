@@ -1,8 +1,12 @@
 ---
 import { externalLinks, type LinkKey } from '../config/links';
 import { ui } from '../config/strings';
+import type { Locale } from '../config/i18n';
 
-const t = ui.en;
+interface Props { locale?: Locale }
+const { locale = 'en' } = Astro.props;
+
+const t = ui[locale];
 const storeKeys: LinkKey[] = ['steam', 'switch', 'itch', 'paddle'];
 const stores = storeKeys.map((key) => ({ key, ...externalLinks[key] }));
 ---

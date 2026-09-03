@@ -3,8 +3,12 @@ import ExternalLink from './ExternalLink.astro';
 import { SITE } from '../config/site';
 import { ui } from '../config/strings';
 import type { LinkKey } from '../config/links';
+import type { Locale } from '../config/i18n';
 
-const t = ui.en;
+interface Props { locale?: Locale }
+const { locale = 'en' } = Astro.props;
+
+const t = ui[locale];
 const year = new Date().getFullYear();
 const socials: LinkKey[] = ['discord', 'x', 'youtube'];
 ---

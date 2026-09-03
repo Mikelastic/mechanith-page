@@ -1,18 +1,60 @@
 export const ui = {
-    en: {
-      nav: { home: 'Home', media: 'Media', faq: 'FAQ', blog: 'Blog', wiki: 'Wiki' },
-      buy: 'BUY',
-      whereToBuy: 'Where to buy',
-      stayInTouch: 'Stay in orbit',
-      newsletterNote: 'Monthly development notes. No spam. Unsubscribe anytime.',
-      emailLabel: 'Email address',
-      emailPlaceholder: 'you@example.com',
-      subscribe: 'Notify me',
-      newsletterSoon: 'The mailing list opens soon — until then, catch updates on Discord and X.',
-      contactLine: 'Business & press:',
-      soon: 'soon',
+  en: {
+    nav: { home: 'Home', media: 'Media', faq: 'FAQ', blog: 'Blog', wiki: 'Wiki' },
+    buy: 'BUY',
+    whereToBuy: 'Where to buy',
+    stayInTouch: 'Stay in orbit',
+    newsletterNote: 'Monthly development notes. No spam. Unsubscribe anytime.',
+    emailLabel: 'Email address',
+    emailPlaceholder: 'you@example.com',
+    subscribe: 'Notify me',
+    newsletterSoon: 'The mailing list opens soon — until then, catch updates on Discord and X.',
+    contactLine: 'Business & press:',
+    soon: 'soon',
+    comingSoon: 'Coming soon',
+    faq: {
+      title: 'Frequently asked questions',
+      subtitle: 'Everything we can answer at this stage of development.',
     },
-    // es: { … }   ← future locales are added here; nothing else changes
-  } as const;
-  
-  export type Locale = keyof typeof ui;
+    media: {
+      title: 'Media',
+      story: 'The story',
+      features: 'Features',
+      gallery: 'Screenshots & video',
+      galleryNote: 'Screenshots, concept art and the trailer arrive here as they are finalized.',
+      press: 'Press kit',
+      pressNote: 'Logos, key art, screenshots, factsheet and trailers — one ZIP for journalists and creators.',
+      pressSoon: 'The press kit is being assembled. Request it by mail in the meantime:',
+      download: 'Download press kit',
+    },
+  },
+  es: {
+    nav: { home: 'Inicio', media: 'Multimedia', faq: 'FAQ', blog: 'Blog', wiki: 'Wiki' },
+    buy: 'COMPRAR',
+    whereToBuy: 'Dónde comprar',
+    stayInTouch: 'Mantente en órbita',
+    newsletterNote: 'Notas de desarrollo mensuales. Sin spam. Cancela cuando quieras.',
+    emailLabel: 'Correo electrónico',
+    emailPlaceholder: 'tu@ejemplo.com',
+    subscribe: 'Avisarme',
+    newsletterSoon: 'La lista de correo pronto abrirá — mientras tanto, síguenos en Discord y X.',
+    contactLine: 'Negocios y prensa:',
+    soon: 'pronto',
+    comingSoon: 'Próximamente',
+    faq: {
+      title: 'Preguntas frecuentes',
+      subtitle: 'Todo lo que podemos responder en esta etapa del desarrollo.',
+    },
+    media: {
+      title: 'Multimedia',
+      story: 'Historia',
+      features: 'Características',
+      gallery: 'Capturas y vídeo',
+      galleryNote: 'Las capturas, el arte conceptual y el tráiler llegarán aquí a medida que se finalicen.',
+      press: 'Kit de prensa',
+      pressNote: 'Logotipos, key art, capturas, ficha técnica y tráilers — un ZIP para prensa y creadores.',
+      pressSoon: 'El kit de prensa está en preparación. Mientras tanto, solicítalo por correo:',
+      download: 'Descargar kit de prensa',
+    },
+  },  // de: { … }   ← future locales are added here; nothing else changes
+} as const;

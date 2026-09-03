@@ -2,25 +2,36 @@
 import { navItems } from '../config/nav';
 import { ui } from '../config/strings';
 import { SITE } from '../config/site';
+import { alternatePath, localizedPath, localeLabels, type Locale } from '../config/i18n';
 
-const t = ui.en;
+interface Props { locale?: Locale; localized?: boolean }
+const { locale = 'en', localized = true } = Astro.props;
+
+const t = ui[locale];
 const path = Astro.url.pathname;
+const home = localizedPath(locale, '/');
 const isActive = (href: string) =>
-  href === '/' ? path === '/' : path.startsWith(href);
+  href === '/' ? path === home : path.startsWith(localizedPath(locale, href));
+const toggleHref = localized ? alternatePath(locale, path) : undefined;
+const toggleLabel = locale === 'en' ? localeLabels.es.short : localeLabels.en.short;
 ---
 <header class="topbar">
-  <a class="brand" href="/">{SITE.title}</a>
+  <a class="brand" href={home}>{SITE.title}</a>
 
   <nav class="topnav" aria-label="Primary">
     {navItems.map((item) => (
-      <a href={item.href} class:is-active={isActive(item.href)}>
+      <a href={localizedPath(locale, item.href)} class:is-active={isActive(item.href)}>
         {t.nav[item.key]}
       </a>
     ))}
   </nav>
 
   <div class="lang">
-    <button type="button" title="More languages coming">EN</button>
+    {toggleHref ? (
+      <a href={toggleHref} title={locale === 'en' ? 'Español' : 'English'}>{toggleLabel}</a>
+    ) : (
+      <button type="button" title="More languages coming">{localeLabels[locale].short}</button>
+    )}
   </div>
 </header>
 
@@ -50,6 +61,7 @@ const isActive = (href: string) =>
     color: var(--c-muted);
     text-decoration: none;
     font-size: 0.85rem;
+    font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     padding: 0.35rem 0;
@@ -58,16 +70,21 @@ const isActive = (href: string) =>
   .topnav a:hover { color: var(--c-ink); }
   .topnav a.is-active { color: var(--c-accent); border-bottom-color: var(--c-accent); }
   .lang { justify-self: end; }
-  .lang button {
+  .lang a, .lang button {
+    display: inline-block;
     background: none;
-    border: 1px solid var(--c-line);
+    border: 1px solid var(--c-line-strong);
     color: var(--c-muted);
     font: inherit;
+    font-weight: 600;
     font-size: 0.8rem;
     letter-spacing: 0.1em;
     padding: 0.25rem 0.5rem;
-    cursor: default;
+    text-decoration: none;
+    cursor: pointer;
   }
+  .lang a:hover { color: var(--c-accent); border-color: var(--c-accent); }
+  .lang button { cursor: default; }
   @media (max-width: 720px) {
     .topnav { gap: 0.9rem; overflow-x: auto; }
     .topnav a { font-size: 0.72rem; letter-spacing: 0.08em; }

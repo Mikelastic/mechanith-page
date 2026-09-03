@@ -1,0 +1,47 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { faq } from '../data/faq';
+import { ui } from '../config/strings';
+import type { Locale } from '../config/i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+
+const t = ui[locale].faq;
+const entries = faq[locale];
+---
+<BaseLayout title={t.title} locale={locale}>
+  <section class="page shell">
+    <h1>{t.title}</h1>
+    <p class="lead">{t.subtitle}</p>
+    <div class="faq-list">
+      {entries.map((e) => (
+        <details class="faq-item">
+          <summary>{e.q}</summary>
+          <p>{e.a}</p>
+        </details>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .page h1 { font-size: var(--size-h1); }
+  .lead { color: var(--c-muted); max-width: 40rem; }
+  .faq-list { display: grid; gap: 0.75rem; margin-top: 2rem; }
+  .faq-item {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line-strong);
+  }
+  .faq-item summary {
+    cursor: pointer;
+    padding: 1rem 1.25rem;
+    font-weight: 600;
+    list-style: none;
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::before { content: '+ '; color: var(--c-accent); font-weight: 700; }
+  .faq-item[open] summary::before { content: '− '; }
+  .faq-item summary:hover { color: var(--c-accent); }
+  .faq-item p { padding: 0 1.25rem 1.25rem; color: var(--c-muted); margin: 0; }
+</style>

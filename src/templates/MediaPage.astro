@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { SITE } from '../config/site';
+import { ui } from '../config/strings';
+import type { Locale } from '../config/i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+
+const t = ui[locale].media;
+
+const copy = {
+  en: {
+    story:
+      '[TODO: one-paragraph story hook from the internal GDD.] A crash. A hostile world. Two survivors bound together — and the ruins of a civilization that answers questions nobody asked.',
+    features: [
+      { h: 'Symbiotic swapping', p: 'Two bodies, one mind — swap on the fly, pick the right character for every moment.' },
+      { h: 'Action with tactics', p: 'Fast-paced shooting blended with deliberate positioning.' },
+      { h: 'Crafted chambers, procedural layouts', p: 'Hand-made rooms and tilemaps, connected and populated anew on every descent.' },
+      { h: 'Crashed-ship hub', p: 'Spend resources between runs and grow stronger.' },
+    ],
+    videoLabel: 'TRAILER — TO COME',
+    shotLabel: 'SCREENSHOT — TO COME',
+  },
+  es: {
+    story:
+      '[TODO: gancho narrativo de una frase, tomado del GDD interno.] Un accidente. Un mundo hostil. Dos supervivientes unidos — y las ruinas de una civilización que responde preguntas que nadie hizo.',
+    features: [
+      { h: 'Intercambio simbiótico', p: 'Dos cuerpos, una mente: intercambia al instante y elige el personaje correcta para cada momento.' },
+      { h: 'Acción con táctica', p: 'Disparos frenéticos combinados con posicionamiento deliberado.' },
+      { h: 'Salas hechas a mano, trazados procedurales', p: 'Habitaciones y tilemaps artesanales, conectados y poblados de nuevo en cada descenso.' },
+      { h: 'Hub de la nave estrellada', p: 'Gasta recursos entre partidas y hazte más fuerte.' },
+    ],
+    videoLabel: 'TRÁILER — PRÓXIMAMENTE',
+    shotLabel: 'CAPTURA — PRÓXIMAMENTE',
+  },
+}[locale];
+---
+<BaseLayout title={t.title} locale={locale}>
+  <section class="page shell">
+    <h1>{t.title}</h1>
+
+    <section class="sec">
+      <h2>{t.story}</h2>
+      <p class="lead">{copy.story}</p>
+    </section>
+
+    <section class="sec">
+      <h2>{t.features}</h2>
+      <div class="features">
+        {copy.features.map((f) => (
+          <article><h3>{f.h}</h3><p>{f.p}</p></article>
+        ))}
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>{t.gallery}</h2>
+      <p class="note">{t.galleryNote}</p>
+      <div class="video" role="img" aria-label={copy.videoLabel}>{copy.videoLabel}</div>
+      <div class="shots">
+        <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+        <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+        <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+        <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+        <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+        <div class="shot" role="img" aria-label={copy.shotLabel}>{copy.shotLabel}</div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>{t.press}</h2>
+      <p>{t.pressNote}</p>
+      <p class="note">{t.pressSoon} <a href={`mailto:${SITE.email}`}>{SITE.email}</a></p>
+      <button class="btn" disabled>{t.download}</button>
+    </section>
+  </section>
+</BaseLayout>
+
+<style>
+  .page h1 { font-size: var(--size-h1); }
+  .sec { margin-top: 3rem; padding-top: 2.5rem; border-top: 1px solid var(--c-line); }
+  .lead { max-width: 44rem; }
+  .note { color: var(--c-muted); font-size: var(--size-small); }
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .features article {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line-strong);
+    padding: 1.25rem;
+  }
+  .features h3 { font-size: 1.05rem; margin: 0 0 0.5rem; }
+  .features p { color: var(--c-muted); margin: 0; }
+  .video, .shot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--c-surface-2);
+    border: 1px solid var(--c-line-strong);
+    color: var(--c-muted);
+    letter-spacing: 0.25em;
+    font-size: 0.75rem;
+  }
+  .video { aspect-ratio: 16 / 9; margin-top: 1.5rem; }
+  .shots { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem; }
+  .shot { aspect-ratio: 16 / 9; }
+  @media (max-width: 720px) {
+    .features, .shots { grid-template-columns: 1fr; }
+  }
+</style>
