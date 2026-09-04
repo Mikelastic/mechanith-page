@@ -12,8 +12,12 @@ export const GET: APIRoute = async (context) => {
     title: `${SITE.title} — ${ui.en.blog.title}`,
     description: ui.en.blog.subtitle,
     site,
-    // Self-identification: lets feed consumers verify the feed's own
-    // location (Atom RFC 4287 practice, adopted by RSS best practices)
+    // 1 — DECLARE the vocabulary: this puts xmlns:atom="…" on the <rss> root,
+    //     which is what makes any <atom:…> element legal inside the document.
+    xmlns: {
+      atom: 'http://www.w3.org/2005/Atom',
+    },
+    // 2 — USE the vocabulary: the self-link (injected into <channel>)
     customData: `<atom:link href="${new URL('/blog/rss.xml', site).href}" rel="self" type="application/rss+xml" />`,
     items: posts.map((post) => ({
       title: post.data.title,
