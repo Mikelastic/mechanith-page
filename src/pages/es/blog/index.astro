@@ -1,12 +1,5 @@
 ---
-// src/pages/es/blog/index.astro
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import { ui } from '../../../config/strings';
+// src/pages/es/blog/index.astro — /es/blog = página 1
+import BlogIndexPage from '../../../templates/BlogIndexPage.astro';
 ---
-<BaseLayout title={ui.es.nav.blog} locale="es">
-  <section class="page shell">
-    <h1>Notas de desarrollo</h1>
-    <p>En construcción — el blog (notas técnicas mensuales, paginación y búsqueda) llega en la Fase 2.
-    Este marcador existe para que el enlace de la barra superior funcione desde el primer día.</p>
-  </section>
-</BaseLayout>
+<BlogIndexPage locale="es" page={1} />

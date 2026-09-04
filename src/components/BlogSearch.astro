@@ -1,0 +1,194 @@
+---
+import { ui } from '../config/strings';
+import type { Locale } from '../config/i18n';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const t = ui[locale].blog;
+---
+<div class="blog-search" data-locale={locale}>
+  <form class="search-form" id="search-form" role="search" action="#">
+    <label class="sr-only" for="search-input">{t.search}</label>
+    <input id="search-input" type="search" placeholder={t.searchPlaceholder} autocomplete="off" />
+    <button type="submit" class="btn btn-primary">{t.search}</button>
+    <button type="button" id="search-clear" class="btn" hidden>{t.clear}</button>
+  </form>
+  <p class="search-status" id="search-status" role="status" aria-live="polite"></p>
+  <ol class="search-results" id="search-results" hidden></ol>
+</div>
+
+<script>
+  import { ui } from '../config/strings';
+
+  interface IndexedPost {
+    url: string; title: string; date: string; body: string;
+    nTitle: string; nBody: string;
+  }
+
+  const container = document.querySelector<HTMLElement>('.blog-search');
+  if (container) {
+    const locale = container.dataset.locale === 'es' ? 'es' : 'en';
+    const t = ui[locale].blog;
+
+    const form = container.querySelector<HTMLFormElement>('#search-form')!;
+    const input = container.querySelector<HTMLInputElement>('#search-input')!;
+    const clearBtn = container.querySelector<HTMLButtonElement>('#search-clear')!;
+    const status = container.querySelector<HTMLParagraphElement>('#search-status')!;
+    const results = container.querySelector<HTMLOListElement>('#search-results')!;
+
+    // Owned by BlogIndexPage — the search controls their visibility
+    const entries = document.getElementById('blog-entries');
+    const pagination = document.getElementById('blog-pagination');
+
+    // Accent-fold + lowercase. For Latin-1 accents, NFD decomposition then
+    // combining-mark removal preserves string length 1:1, so normalized
+    // indices map back onto raw strings (used for highlighting).
+    const norm = (s: string) =>
+      s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+    const esc = (s: string) =>
+      s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
+       .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
+    let index: IndexedPost[] | null = null;
+
+    async function loadIndex(): Promise<IndexedPost[]> {
+      if (index) return index;
+      const res = await fetch('/blog/search-index.json');
+      const data = await res.json();
+      index = (data.posts as Array<{ url: string; title: string; date: string; body: string }>).map((p) => ({
+        ...p,
+        nTitle: norm(p.title),
+        nBody: norm(p.body),
+      }));
+      return index;
+    }
+
+    function restore(): void {
+      results.hidden = true;
+      results.innerHTML = '';
+      status.textContent = '';
+      clearBtn.hidden = true;
+      entries?.classList.remove('is-hidden');
+      pagination?.classList.remove('is-hidden');
+    }
+
+    function highlight(text: string, q: string): string {
+      const idx = norm(text).indexOf(norm(q));
+      if (idx === -1) return esc(text);
+      return (
+        esc(text.slice(0, idx)) +
+        '<mark>' + esc(text.slice(idx, idx + q.length)) + '</mark>' +
+        esc(text.slice(idx + q.length))
+      );
+    }
+
+    function buildSnippet(body: string, q: string): string {
+      const idx = norm(body).indexOf(norm(q));
+      if (idx === -1) return esc(body.slice(0, 160)) + '…';
+      const start = Math.max(0, idx - 70);
+      const end = Math.min(body.length, idx + q.length + 90);
+      return (
+        (start > 0 ? '…' : '') +
+        esc(body.slice(start, idx)) +
+        '<mark>' + esc(body.slice(idx, idx + q.length)) + '</mark>' +
+        esc(body.slice(idx + q.length, end)) +
+        (end < body.length ? '…' : '')
+      );
+    }
+
+    async function runSearch(raw: string): Promise<void> {
+      const q = raw.trim();
+      const qn = norm(q);
+
+      if (qn.length < 2) {
+        restore();
+        if (q.length > 0) status.textContent = t.minChars;
+        return;
+      }
+
+      const posts = await loadIndex();
+
+      // Title hits rank above body hits; within each tier the index order
+      // (newest first) is preserved by this stable partition
+      const titleHits: IndexedPost[] = [];
+      const bodyHits: IndexedPost[] = [];
+      for (const p of posts) {
+        if (p.nTitle.includes(qn)) titleHits.push(p);
+        else if (p.nBody.includes(qn)) bodyHits.push(p);
+      }
+      const hits = [...titleHits, ...bodyHits];
+
+      entries?.classList.add('is-hidden');
+      pagination?.classList.add('is-hidden');
+      clearBtn.hidden = false;
+      status.textContent =
+        hits.length === 0 ? t.noResults : t.resultsCount.replace('{count}', String(hits.length));
+
+      const dateFmt = new Intl.DateTimeFormat(locale, {
+        year: 'numeric', month: 'short', day: 'numeric',
+      });
+
+      results.innerHTML = hits
+        .map((p) => {
+          return (
+            '<li class="result">' +
+            `<a class="result-link" href="${esc(p.url)}">${highlight(p.title, q)}</a>` +
+            `<p class="result-date">${dateFmt.format(new Date(p.date))}</p>` +
+            `<p class="result-snippet">${buildSnippet(p.body, q)}</p>` +
+            '</li>'
+          );
+        })
+        .join('');
+      results.hidden = false;
+    }
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      void runSearch(input.value);
+    });
+    clearBtn.addEventListener('click', () => {
+      input.value = '';
+      restore();
+      input.focus();
+    });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        input.value = '';
+        restore();
+      }
+    });
+  }
+</script>
+
+<style>
+  .blog-search { margin: 2.5rem 0 2rem; }
+  .search-form { display: flex; gap: 0.6rem; }
+  .search-form input {
+    flex: 1;
+    background: var(--c-bg);
+    border: 1px solid var(--c-line-strong);
+    color: var(--c-ink);
+    font: inherit;
+    padding: 0.65rem 0.75rem;
+  }
+  .search-form input:focus {
+    outline: none;
+    border-color: var(--c-accent);
+  }
+  .search-status { color: var(--c-muted); font-size: var(--size-small); margin: 0.75rem 0 0; min-height: 1.2em; }
+  .search-results { list-style: none; margin: 1.25rem 0 0; padding: 0; display: grid; gap: 1rem; }
+  .result {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line-strong);
+    padding: 1.1rem 1.25rem;
+  }
+  .result-link { color: var(--c-ink); text-decoration: none; font-weight: 600; }
+  .result-link:hover { color: var(--c-accent); }
+  .result-date { margin: 0.35rem 0 0.5rem; color: var(--c-muted); font-size: var(--size-small); }
+  .result-snippet { margin: 0; color: var(--c-muted); font-size: var(--size-small); }
+  mark {
+    background: rgba(12, 230, 242, 0.18);
+    color: var(--c-ink);
+    padding: 0 0.1em;
+  }
+</style>

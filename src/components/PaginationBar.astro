@@ -1,0 +1,51 @@
+---
+import { ui } from '../config/strings';
+import type { Locale } from '../config/i18n';
+
+interface Props { locale: Locale; page: number; totalPages: number; basePath: string }
+const { locale, page, totalPages, basePath } = Astro.props;
+const t = ui[locale].blog;
+
+// "Newer" from page 2 lands on the canonical page 1 — never /blog/page/1
+const newerHref = page - 1 <= 1 ? basePath : `${basePath}/page/${page - 1}`;
+const olderHref = `${basePath}/page/${page + 1}`;
+const info = t.pageOf.replace('{page}', String(page)).replace('{total}', String(totalPages));
+---
+{totalPages > 1 && (
+  <nav class="pager" aria-label={t.title}>
+    {page > 1
+      ? <a class="pg" href={newerHref}>← {t.newerEntries}</a>
+      : <span class="pg-spacer" aria-hidden="true"></span>}
+    <span class="pg-info">{info}</span>
+    {page < totalPages
+      ? <a class="pg" href={olderHref}>{t.olderEntries} →</a>
+      : <span class="pg-spacer" aria-hidden="true"></span>}
+  </nav>
+)}
+<style>
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 1rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-line-strong);
+    padding: 0.85rem 1.25rem;
+    margin-top: 2.5rem;
+  }
+  .pg:last-child { text-align: right; }
+  .pg {
+    color: var(--c-muted);
+    text-decoration: none;
+    font-size: var(--size-small);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .pg:hover { color: var(--c-accent); }
+  .pg-info {
+    color: var(--c-muted);
+    font-size: var(--size-small);
+    text-align: center;
+  }
+</style>

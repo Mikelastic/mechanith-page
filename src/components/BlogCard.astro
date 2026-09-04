@@ -1,0 +1,103 @@
+---
+import { postSlug, makeExcerpt } from '../utils/blog';
+import type { BlogPost } from '../utils/blog';
+import type { Locale } from '../config/i18n';
+import { ui } from '../config/strings';
+
+interface Props { post: BlogPost; locale: Locale }
+const { post, locale } = Astro.props;
+const t = ui[locale].blog;
+
+const href = `/blog/${postSlug(post.id)}/`;
+const excerpt = post.data.description ?? makeExcerpt(post.body ?? '');
+const dateFmt = new Intl.DateTimeFormat(locale, { year: 'numeric', month: 'short', day: 'numeric' });
+---
+<article class="card">
+  <a class="card-link" href={href}>
+    {post.data.cover ? (
+      <div class="cover">
+        <img src={post.data.cover} alt={post.data.coverAlt ?? ''} loading="lazy" />
+      </div>
+    ) : (
+      <div class="cover cover-empty" aria-hidden="true"></div>
+    )}
+    <div class="meta">
+      <h3 class="card-title">{post.data.title}</h3>
+      <p class="card-date">
+        <time datetime={post.data.pubDate.toISOString()}>
+          {dateFmt.format(post.data.pubDate)}
+        </time>
+        {locale === 'es' && <span class="en-badge" title="Publicado en inglés">EN</span>}
+      </p>
+      <p class="card-excerpt">{excerpt}</p>
+      <span class="read-more">{t.readMore} →</span>
+    </div>
+  </a>
+</article>
+
+<style>
+  .card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-line-strong);
+  }
+  .card:hover { border-color: var(--c-accent-deep); }
+  .card:hover .card-title { color: var(--c-accent); }
+
+  .card-link { display: block; text-decoration: none; color: inherit; }
+
+  .cover {
+    aspect-ratio: 16 / 9;
+    border-bottom: 1px solid var(--c-line-strong);
+    overflow: hidden;
+    background: var(--c-surface-2);
+  }
+  .cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  /* Placeholder while no art exists: a faint schematic grid */
+  .cover-empty {
+    background:
+      linear-gradient(var(--c-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--c-line) 1px, transparent 1px),
+      var(--c-surface-2);
+    background-size: 24px 24px, 24px 24px, auto;
+  }
+
+  .meta { padding: 1.25rem 1.25rem 1.5rem; }
+  .card-title {
+    margin: 0 0 0.5rem;
+    font-size: 1.15rem;
+    line-height: 1.3;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .card-date {
+    margin: 0 0 0.75rem;
+    font-size: var(--size-small);
+    color: var(--c-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .en-badge {
+    font-size: 0.6rem;
+    letter-spacing: 0.15em;
+    color: var(--c-accent);
+    border: 1px solid var(--c-line-strong);
+    padding: 0.05rem 0.35rem;
+  }
+  .card-excerpt {
+    margin: 0 0 1rem;
+    color: var(--c-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .read-more {
+    font-size: var(--size-small);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--c-accent);
+  }
+</style>

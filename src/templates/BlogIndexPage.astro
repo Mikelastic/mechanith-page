@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import BlogSearch from '../components/BlogSearch.astro';
+import BlogCard from '../components/BlogCard.astro';
+import PaginationBar from '../components/PaginationBar.astro';
+import { getPublishedPosts, PAGE_SIZE } from '../utils/blog';
+import { localizedPath, type Locale } from '../config/i18n';
+import { ui } from '../config/strings';
+
+interface Props { locale: Locale; page?: number }
+const { locale, page = 1 } = Astro.props;
+
+const t = ui[locale].blog;
+const posts = await getPublishedPosts();
+const totalPages = Math.max(1, Math.ceil(posts.length / PAGE_SIZE));
+const slice = posts.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+const basePath = localizedPath(locale, '/blog');
+---
+<BaseLayout title={t.title} description={t.subtitle} locale={locale}>
+  <section class="blog page shell">
+    <header class="blog-head">
+      <h1>{t.title}</h1>
+      <p class="sub">{t.subtitle}</p>
+    </header>
+
+    <BlogSearch locale={locale} />
+
+    <div class="entries" id="blog-entries">
+      {slice.map((post) => <BlogCard post={post} locale={locale} />)}
+    </div>
+
+    <div id="blog-pagination">
+      <PaginationBar locale={locale} page={page} totalPages={totalPages} basePath={basePath} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .blog-head h1 { font-size: var(--size-h1); margin-bottom: 0.5rem; }
+  .sub { color: var(--c-muted); max-width: 40rem; margin: 0; }
+  .entries { display: grid; gap: 1.5rem; }
+</style>
