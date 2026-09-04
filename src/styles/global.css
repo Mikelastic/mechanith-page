@@ -1,7 +1,5 @@
 /* =========================================================
    MECHANITH — design tokens
-   PLACEHOLDER palette — will be replaced with your master
-   palette (send me the hex codes when ready).
    ========================================================= */
    :root {
     /* Void Navy ramp — base surfaces & text (your ramp 1) */
@@ -108,3 +106,69 @@
   /* Utility: toggled by the blog search to hide the entries/pagination
    while search results are on screen */
 .is-hidden { display: none !important; }
+
+/* =========================================================
+   B2 — code highlighting (Shiki 'css-variables' theme).
+   Shiki emits var(--astro-code-*) inline on code blocks; we
+   define the vars from the game palette. MUST be global:
+   code renders outside component scope.
+   ========================================================= */
+   :root {
+    --astro-code-foreground: #e2e6eb;         /* Steel Bright */
+    --astro-code-background: #11182b;         /* Void Deep (raised panel) */
+    --astro-code-token-comment: #758b9f;      /* Navy Light — muted */
+    --astro-code-token-keyword: #a64dcc;      /* Aethel Purple */
+    --astro-code-token-string: #0ce6f2;       /* VoidCyan */
+    --astro-code-token-function: #f5c700;     /* AlloyGold */
+    --astro-code-token-constant: #9ba4b5;     /* Steel Base */
+    --astro-code-token-parameter: #c1c8d1;    /* Steel Mid-Light */
+    --astro-code-token-punctuation: #9ba4b5;  /* Steel Base */
+    --astro-code-token-link: #0ce6f2;         /* VoidCyan */
+  }
+  
+  .astro-code {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--c-line-strong);
+    overflow-x: auto;
+    font-size: 0.875rem;
+    line-height: 1.65;
+    font-family: ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+  }
+  
+/* =========================================================
+     B2 — prose (reading) styles.
+     MUST be global: markdown from <Content /> renders outside
+     any component's scoped styles (Gotcha 1).
+   ========================================================= */
+  .prose { max-width: 44rem; margin-inline: auto; }
+  .prose h2 { font-size: 1.5rem; margin: 2.5rem 0 1rem; }
+  .prose h3 { font-size: 1.2rem; margin: 2rem 0 0.75rem; }
+  .prose p { margin: 0 0 1.25rem; color: var(--c-ink); }
+  .prose a { color: var(--c-accent); }
+  .prose a:hover { text-decoration: underline; }
+  .prose strong { color: var(--c-ink); }
+  .prose blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem 1.5rem;
+    border-left: 3px solid var(--c-accent);
+    background: var(--c-surface);
+    color: var(--c-ink);
+  }
+  .prose blockquote p { margin: 0; }
+  .prose ul, .prose ol { margin: 0 0 1.25rem; padding-left: 1.5rem; color: var(--c-ink); }
+  .prose li { margin-bottom: 0.4rem; }
+  .prose img {
+    display: block;
+    max-width: 100%;
+    margin: 1.5rem auto;
+    border: 1px solid var(--c-line-strong);
+  }
+  .prose hr { border: none; border-top: 1px solid var(--c-line-strong); margin: 2.5rem 0; }
+  .prose :not(pre) > code {
+    font-family: ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+    font-size: 0.85em;
+    color: var(--c-accent);
+    background: var(--c-surface-2);
+    border: 1px solid var(--c-line);
+    padding: 0.1em 0.35em;
+  }

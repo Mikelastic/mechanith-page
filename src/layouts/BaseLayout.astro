@@ -1,4 +1,5 @@
 ---
+// src/layouts/BaseLayout.astro — v2 (B2): article SEO, RSS discovery, slash-canonicals
 import '@fontsource/chakra-petch/300.css';
 import '@fontsource/chakra-petch/400.css';
 import '@fontsource/chakra-petch/600.css';
@@ -8,17 +9,19 @@ import OverlayTopBar from '../components/OverlayTopBar.astro';
 import BuyButton from '../components/BuyButton.astro';
 import FooterCTA from '../components/FooterCTA.astro';
 import { SITE } from '../config/site';
-import { defaultLocale, type Locale } from '../config/i18n';
+import { defaultLocale, localizedPath, stripLocale, type Locale } from '../config/i18n';
 
 interface Props {
   title: string;
   description?: string;
   locale?: Locale;
-  /** false on pages that exist only in English (link/legal/404) → language toggle inert */
   localized?: boolean;
   showTopBar?: boolean;
   showBuyButton?: boolean;
   showFooterCTA?: boolean;
+  ogType?: 'website' | 'article';
+  publishedTime?: string;
+  ogImage?: string;
 }
 
 const {
@@ -29,16 +32,20 @@ const {
   showTopBar = true,
   showBuyButton = true,
   showFooterCTA = true,
+  ogType = 'website',
+  publishedTime,
+  ogImage,
 } = Astro.props;
 
 const pageTitle = title === SITE.title ? SITE.title : `${title} — ${SITE.title}`;
-const canonical = new URL(Astro.url.pathname, Astro.site);
 
-// hreflang alternates: tell search engines the EN and ES versions of this page
-const path = Astro.url.pathname;
-const rootPath = locale === 'es' ? path.replace(/^\/es(?=\/|$)/, '') || '/' : path;
-const enUrl = new URL(rootPath, Astro.site);
-const esUrl = new URL(rootPath === '/' ? '/es' : `/es${rootPath}`, Astro.site);
+// Canonical/hreflang must use the trailing-slash form — it's the URL
+// Cloudflare actually serves (the bare form 301s to it)
+const withSlash = (p: string) => (p.endsWith('/') ? p : `${p}/`);
+const rootPath = stripLocale(Astro.url.pathname);
+const canonical = new URL(withSlash(Astro.url.pathname), Astro.site);
+const enUrl = new URL(withSlash(localizedPath('en', rootPath)), Astro.site);
+const esUrl = new URL(withSlash(localizedPath('es', rootPath)), Astro.site);
 ---
 <!doctype html>
 <html lang={locale}>
@@ -56,11 +63,16 @@ const esUrl = new URL(rootPath === '/' ? '/es' : `/es${rootPath}`, Astro.site);
         <link rel="alternate" hreflang="x-default" href={enUrl} />
       </>
     )}
-    <meta property="og:type" content="website" />
+    <link rel="alternate" type="application/rss+xml" title={`${SITE.title} — Development notes`} href="/blog/rss.xml" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content={SITE.title} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
+    {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
+    {ogType === 'article' && publishedTime && (
+      <meta property="article:published_time" content={publishedTime} />
+    )}
   </head>
   <body>
     {/* LAYER 2 — fixed chrome, toggled per page */}

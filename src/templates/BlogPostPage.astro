@@ -1,0 +1,95 @@
+---
+// src/templates/BlogPostPage.astro — the entry reading experience (EN-only, per D7)
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostNav from '../components/PostNav.astro';
+import { postSlug, makeExcerpt } from '../utils/blog';
+import type { BlogPost } from '../utils/blog';
+import { render } from 'astro:content';
+import { SITE } from '../config/site';
+
+interface Props {
+  post: BlogPost;
+  newer: BlogPost | null;
+  older: BlogPost | null;
+}
+
+const { post, newer, older } = Astro.props;
+const { Content } = await render(post);
+
+const url = `/blog/${postSlug(post.id)}/`;
+const excerpt = post.data.description ?? makeExcerpt(post.body ?? '');
+const dateFmt = new Intl.DateTimeFormat('en', { year: 'numeric', month: 'long', day: 'numeric' });
+
+// JSON-LD structured data — Google's rich-result vocabulary for blog posts
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: post.data.title,
+  description: excerpt,
+  url: new URL(url, Astro.site).toString(),
+  datePublished: post.data.pubDate.toISOString(),
+  author: { '@type': 'Organization', name: SITE.studio },
+  ...(post.data.cover ? { image: [new URL(post.data.cover, Astro.site).toString()] } : {}),
+};
+---
+<BaseLayout
+  title={post.data.title}
+  description={excerpt}
+  locale="en"
+  localized={false}
+
+  {/* The Footer is disabled and replaced with a small line */}
+  showFooterCTA={false}
+  ogType="article"
+  publishedTime={post.data.pubDate.toISOString()}
+>
+  <article class="post page shell">
+    <header class="post-head">
+      {post.data.cover && (
+        <div class="post-cover">
+          <img src={post.data.cover} alt={post.data.coverAlt ?? ''} />
+        </div>
+      )}
+      <h1>{post.data.title}</h1>
+      <p class="post-meta">
+        <time datetime={post.data.pubDate.toISOString()}>{dateFmt.format(post.data.pubDate)}</time>
+        {post.data.tags.length > 0 && (
+          <span class="tags">{post.data.tags.map((tag) => `#${tag}`).join(' · ')}</span>
+        )}
+      </p>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+    
+    {/* Simplistic Footer */}
+    <footer class="post-foot">
+      <PostNav newer={newer} older={older} />
+      <p class="fine">
+        © {new Date().getFullYear()} {SITE.studio} · <a href="/legal/privacy">Privacy</a> · <a href="/legal/terms">Terms</a>
+      </p>
+    </footer>
+  </article>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</BaseLayout>
+
+<style>
+  .post-head { margin-bottom: 2.5rem; }
+  .post-cover { margin-bottom: 2rem; border: 1px solid var(--c-line-strong); }
+  .post-cover img { display: block; width: 100%; }
+  .post-head h1 { font-size: var(--size-h1); margin-bottom: 0.75rem; }
+  .post-meta {
+    color: var(--c-muted);
+    font-size: var(--size-small);
+    display: flex;
+    gap: 1rem;
+    margin: 0;
+  }
+  .tags { color: var(--c-accent-deep); }
+  .post-foot { margin-top: 3rem; border-top: 1px solid var(--c-line); padding-top: 2rem; }
+  .fine { text-align: center; color: var(--c-muted); font-size: var(--size-small); margin: 2rem 0 0; }
+  .fine a { color: var(--c-muted); }
+  .fine a:hover { color: var(--c-ink); }
+</style>

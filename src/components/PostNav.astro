@@ -1,0 +1,78 @@
+---
+// src/components/PostNav.astro — mode 2: prev/next navigation between entries
+import { postSlug } from '../utils/blog';
+import type { BlogPost } from '../utils/blog';
+import { ui } from '../config/strings';
+
+interface Props { newer: BlogPost | null; older: BlogPost | null }
+const { newer, older } = Astro.props;
+const t = ui.en.blog;
+---
+<nav class="postnav" aria-label={t.title}>
+  {older ? (
+    <a class="nav-link" href={`/blog/${postSlug(older.id)}/`}>
+      <span class="dir" aria-hidden="true">←</span>
+      <span class="nav-text">
+        <span class="nav-label">{t.olderPost}</span>
+        <span class="nav-title">{older.data.title}</span>
+      </span>
+    </a>
+  ) : <span class="nav-spacer" aria-hidden="true"></span>}
+  {newer ? (
+    <a class="nav-link nav-align-right" href={`/blog/${postSlug(newer.id)}/`}>
+      <span class="nav-text">
+        <span class="nav-label">{t.newerPost}</span>
+        <span class="nav-title">{newer.data.title}</span>
+      </span>
+      <span class="dir" aria-hidden="true">→</span>
+    </a>
+  ) : <span class="nav-spacer" aria-hidden="true"></span>}
+</nav>
+<p class="all-entries"><a href="/blog">↑ {t.backToBlog}</a></p>
+
+<style>
+  .postnav { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-line-strong);
+    padding: 1rem 1.1rem;
+    text-decoration: none;
+    min-width: 0;
+  }
+  .nav-link:hover { border-color: var(--c-accent-deep); }
+  .nav-align-right { justify-content: flex-end; text-align: right; }
+  .dir { color: var(--c-accent); font-size: 1.2rem; flex-shrink: 0; }
+  .nav-text { display: grid; gap: 0.15rem; min-width: 0; }
+  .nav-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--c-muted);
+  }
+  .nav-title {
+    color: var(--c-ink);
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .nav-link:hover .nav-title { color: var(--c-accent); }
+  .all-entries { text-align: center; margin: 1.25rem 0 0; }
+  .all-entries a {
+    color: var(--c-muted);
+    font-size: var(--size-small);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .all-entries a:hover { color: var(--c-accent); }
+  @media (max-width: 720px) {
+    .postnav { grid-template-columns: 1fr; }
+    .nav-align-right { justify-content: flex-start; text-align: left; }
+  }
+</style>
