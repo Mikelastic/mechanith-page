@@ -6,11 +6,15 @@ import { SITE } from '../../config/site';
 import { ui } from '../../config/strings';
 
 export const GET: APIRoute = async (context) => {
+  const site = context.site ?? new URL(SITE.url);
   const posts = await getPublishedPosts();
   return rss({
     title: `${SITE.title} — ${ui.en.blog.title}`,
     description: ui.en.blog.subtitle,
-    site: context.site ?? SITE.url,
+    site,
+    // Self-identification: lets feed consumers verify the feed's own
+    // location (Atom RFC 4287 practice, adopted by RSS best practices)
+    customData: `<atom:link href="${new URL('/blog/rss.xml', site).href}" rel="self" type="application/rss+xml" />`,
     items: posts.map((post) => ({
       title: post.data.title,
       link: `/blog/${postSlug(post.id)}/`,

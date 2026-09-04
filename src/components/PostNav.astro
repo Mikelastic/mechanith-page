@@ -1,5 +1,8 @@
 ---
 // src/components/PostNav.astro — mode 2: prev/next navigation between entries
+// SITE-WIDE SPATIAL CONVENTION (must match PaginationBar):
+//   LEFT (←)  = newer — toward the top of the listing
+//   RIGHT (→) = older — deeper into the archive
 import { postSlug } from '../utils/blog';
 import type { BlogPost } from '../utils/blog';
 import { ui } from '../config/strings';
@@ -9,20 +12,20 @@ const { newer, older } = Astro.props;
 const t = ui.en.blog;
 ---
 <nav class="postnav" aria-label={t.title}>
-  {older ? (
-    <a class="nav-link" href={`/blog/${postSlug(older.id)}/`}>
-      <span class="dir" aria-hidden="true">←</span>
-      <span class="nav-text">
-        <span class="nav-label">{t.olderPost}</span>
-        <span class="nav-title">{older.data.title}</span>
-      </span>
-    </a>
-  ) : <span class="nav-spacer" aria-hidden="true"></span>}
   {newer ? (
-    <a class="nav-link nav-align-right" href={`/blog/${postSlug(newer.id)}/`}>
+    <a class="nav-link" href={`/blog/${postSlug(newer.id)}/`}>
+      <span class="dir" aria-hidden="true">←</span>
       <span class="nav-text">
         <span class="nav-label">{t.newerPost}</span>
         <span class="nav-title">{newer.data.title}</span>
+      </span>
+    </a>
+  ) : <span class="nav-spacer" aria-hidden="true"></span>}
+  {older ? (
+    <a class="nav-link nav-align-right" href={`/blog/${postSlug(older.id)}/`}>
+      <span class="nav-text">
+        <span class="nav-label">{t.olderPost}</span>
+        <span class="nav-title">{older.data.title}</span>
       </span>
       <span class="dir" aria-hidden="true">→</span>
     </a>
